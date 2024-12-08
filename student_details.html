@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="Logo_png.png" type="image/x-icon">
+    <title>Student Details</title>
+    <!-- Bootstrap Link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body class="bg-dark">
+
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-dark bg-dark justify-content-between sticky-top mx-5 border-bottom p-2">
+        <a class="navbar-brand">JSON App</a>
+        <div class="form-inline">
+            <button type="button" class="btn btn-primary btn-sm badge-pill px-4" id="viewHomeBtn">Back To Home</button>
+        </div>
+    </nav>
+
+    <div class="container btn-sm">
+        <h4 class="col-12 text-center navbar-text text-light badge-pill mt-3 font-weight-light">Search Students</h4>
+        <div id="searchArea" class="row mb-3 justify-content-between">
+            <input type="text" id="searchInput" class="form-control col-9 badge-pill px-4 btn-sm" placeholder="Enter Student ID">
+            <button id="searchBtn" class="btn btn-warning col-2 badge-pill px-4 btn-sm" onclick="getStudent()">Search</button>
+        </div>
+
+        <!-- View Form -->
+        <div id="viewForm" style="display: none;">
+            <h4 class="col-12 text-center navbar-text text-light badge-pill font-weight-light">View Student Details</h4>
+            <form class="text-light">
+                <div class="mb-2 row text-center justify-content-center">
+                    <label for="viewSid" class="form-label badge-pill btn-sm col-1">ID:</label>
+                    <input type="text" class="form-control badge-pill btn-sm col-7" id="viewSid" readonly>
+                </div>
+                <div class="mb-2 row text-center justify-content-center">
+                    <label for="viewName" class="form-label badge-pill  btn-sm col-1">Name:</label>
+                    <input type="text" class="form-control badge-pill  btn-sm col-7" id="viewName" readonly>
+                </div>
+                <div class="mb-2 row text-center justify-content-center">
+                    <label for="viewAge" class="form-label badge-pill btn-sm col-1">Age:</label>
+                    <input type="text" class="form-control badge-pill btn-sm col-7" id="viewAge" readonly>
+                </div>
+                <div class="mb-2 row text-center justify-content-center">
+                    <label for="viewAddress" class="form-label btn-sm col-1">Address:</label>
+                    <input type="text" class="form-control badge-pill  btn-sm col-7" id="viewAddress" readonly>
+                </div>
+                <div class="mb-2 row text-center justify-content-center">
+                    <label for="viewCgpa" class="form-label badge-pill  btn-sm col-1">CGPA:</label>
+                    <input type="text" class="form-control badge-pill  btn-sm col-7" id="viewCgpa" readonly>
+                </div>
+            </form>
+            <button id="editBtn" class="  btn btn-warning col-12 badge-pill  btn-md shadow mt-2">Edit Student</button><button id="deleteBtn" class="btn btn-danger col-12 badge-pill btn-md shadow mt-2">Delete Student</button>
+        </div>
+
+        <!-- Edit Form -->
+        <div id="editForm" style="display: none;">
+            <h4 class="col-12 text-center navbar-text text-light badge-pill font-weight-light">Edit Student Details</h4>
+            <form id="updateStudentForm" class="text-light">
+                <input type="hidden" id="editSid" value="">
+                <div class="mb-3 row text-center justify-content-center">
+                    <label for="editName" class="form-label badge-pill col-1">Name:</label>
+                    <input type="text" class="form-control badge-pill col-7" id="editName">
+                </div>
+                <div class="mb-3 row text-center justify-content-center">
+                    <label for="editAge" class="form-label badge-pill col-1">Age:</label>
+                    <input type="text" class="form-control badge-pill col-7" id="editAge">
+                </div>
+                <div class="mb-3 row text-center justify-content-center">
+                    <label for="editAddress" class="form-label col-1">Address:</label>
+                    <input type="text" class="form-control badge-pill col-7" id="editAddress">
+                </div>
+                <div class="mb-3 row text-center justify-content-center">
+                    <label for="editCgpa" class="form-label badge-pill col-1">CGPA:</label>
+                    <input type="text" class="form-control badge-pill col-7" id="editCgpa">
+                </div>
+                    <button type="submit" class=" btn btn-warning col-12 badge-pill btn-md shadow mt-2">Update</button><button id="deleteBtn" class="btn btn-danger col-12 badge-pill btn-md shadow mt-2">Delete Student</button>
+            </form>
+        </div>
+
+
+    </div>
+
+    <!-- Footer -->
+    <nav class="navbar navbar-dark bg-dark justify-content-center mt-1 fixed-bottom text-center col-12 text-light">
+        <small class="col-12 shadow" style="height: 23px;background-color: rgba(0, 0, 0, 0.184);">Copyright 2024 ©Minura Anuradha. All Rights Reserved. Privacy Policy</small>
+    </nav>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var student = null;  // Declare a global variable to store the student data
+
+        function getStudent() {
+            var sid = document.getElementById("searchInput").value;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response === "SID not found") {
+                        alert("Student not found");
+                    } else {
+                        student = response; // Store the student data in the global variable
+                        document.getElementById("viewForm").style.display = "block";
+                        document.getElementById("editForm").style.display = "none"; // Ensure edit form is hidden
+
+                        // Fill the view form with the existing data
+                        $('#viewSid').val(student.sid);
+                        $('#viewName').val(student.name);
+                        $('#viewAge').val(student.age);
+                        $('#viewAddress').val(student.address);
+                        $('#viewCgpa').val(student.cgpa);
+
+                        // Show the "Edit" button
+                        $('#editBtn').show();
+                    }
+                }
+            };
+            xhttp.open("GET", "get_student.php?sid=" + sid, true);
+            xhttp.send();
+        }
+
+        // When the "Edit" button is clicked, allow editing
+        $('#editBtn').click(function () {
+            // Hide view form and show edit form
+            $('#viewForm').hide();
+            $('#editForm').show();
+
+            // Fill the edit form with the existing data
+            $('#editSid').val(student.sid);
+            $('#editName').val(student.name);
+            $('#editAge').val(student.age);
+            $('#editAddress').val(student.address);
+            $('#editCgpa').val(student.cgpa);
+        });
+
+        // When the form is submitted (Update button clicked)
+        $('#updateStudentForm').submit(function (e) {
+            e.preventDefault();
+
+            var updatedData = {
+                sid: $('#editSid').val(),
+                name: $('#editName').val(),
+                age: $('#editAge').val(),
+                address: $('#editAddress').val(),
+                cgpa: $('#editCgpa').val()
+            };
+
+            $.ajax({
+                url: 'update_student.php',
+                type: 'POST',
+                data: updatedData,
+                success: function (response) {
+                    alert(response);
+                    window.location.reload(); // Reload the page after updating
+                }
+            });
+        });
+
+        // When the "Delete" button is clicked
+        $('#deleteBtn').click(function () {
+            var confirmDelete = confirm('Are you sure you want to delete this student?');
+            if (confirmDelete) {
+                var sid = document.getElementById("searchInput").value; // Get the SID from the input
+                $.ajax({
+                    url: 'delete_student.php',
+                    type: 'POST',
+                    data: { sid: sid },
+                    success: function (response) {
+                        alert(response);
+                        window.location.reload(); // Reload the page after deletion
+                    }
+                });
+            }
+        });
+
+        // When the "Back To Home" button is clicked
+        $('#viewHomeBtn').click(function () {
+            window.location.href = 'home.html'; // Change this to your home page
+        });
+    </script>
+</body>
+
+</html>

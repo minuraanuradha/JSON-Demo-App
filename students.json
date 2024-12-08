@@ -1,0 +1,16 @@
+[
+    {
+        "sid": 2,
+        "name": "Manula pasan",
+        "age": "23",
+        "address": "Balangoda,Rathnapura",
+        "cgpa": "3.6"
+    },
+    {
+        "sid": 3,
+        "name": "Shalitha Fernando",
+        "age": 21,
+        "address": "Negombo Road, Wattala",
+        "cgpa": 3.2
+    }
+]
